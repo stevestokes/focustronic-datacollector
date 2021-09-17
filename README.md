@@ -1,6 +1,10 @@
 # FocustronicDataCollector DataCollector - A background data collection application for Focustronic Alkatronic and Mastertronic devices
 
-All documentation will be located within this readme. No support is provided or gauranteed.
+All documentation will be located within this readme. No support is provided or guaranteed.
+
+## Logical flow
+
+![flowdiagram](https://raw.githubusercontent.com/stevestokes/focustronic-datacollector/main/FTDC.png)
 
 ## Compatibility
 
@@ -51,3 +55,7 @@ Built on .NET 5.0
 Licensed Under CC BY-NC-ND 2.0; you may not use this file except in 
 compliance with the License. You may obtain a copy of the License
 [here](https://creativecommons.org/licenses/by-nc-nd/2.0/).
+
+## End result
+
+![endresult](https://raw.githubusercontent.com/stevestokes/focustronic-datacollector/main/Grafana.png)
