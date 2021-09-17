@@ -1,0 +1,2 @@
+dotnet publish AlkatronicMeasurementsLambda.csproj /p:GenerateRuntimeConfigurationFiles=true
+pause

@@ -1,0 +1,2 @@
+dotnet publish MeasurementsLambda.csproj /p:GenerateRuntimeConfigurationFiles=true
+pause

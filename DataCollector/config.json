@@ -1,0 +1,24 @@
+{
+  "mastertronicCommand": "api/action_list?",
+  "alkatronicEndpoint": "https://alkatronic.focustronic.com",
+  "alkatronicMeasurementsCommand": "/api/v2/devices/alkatronic/{0}/data/test-records?day=7",
+  "alkatronicDevicesCommand": "/api/v2/users/self/devices?token=",
+  "alkatronicLoginCommand": "/users/login",
+  "alkatronicEmail": "FILL ME IN",
+  "alkatronicPassword": "FILL ME IN",
+  "measurementsBaseEndpoint": "https://{FILL ME IN}.execute-api.us-east-1.amazonaws.com/default",
+  "measurementsEndpoint": "/measurements",
+  "measurementsAlkatronicEndpoint": "/alka-measurements?days=7",
+  "measurementsAPIKey": "FILL ME IN",
+  "measurementsCommand": "?parameter=",
+  "logFile": "datacollector.log",
+  "logging": "true",
+  "parameters": [
+    "NI_VAL",
+    "PO_VAL",
+    "CA_VAL",
+    "MG_VAL",
+    "OLI_VAL",
+    "KH_VAL"
+  ]
+}

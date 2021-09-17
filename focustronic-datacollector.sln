@@ -1,0 +1,91 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataCollector", "DataCollector\DataCollector.csproj", "{48D27561-07DF-4782-9772-1AC987710242}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeltaComparer", "DeltaComparer\DeltaComparer.csproj", "{6497FCB1-7523-4BF4-9F9E-8F5E9DACB987}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{DBC0FBBF-1CBE-4726-9DEF-802433E0A2DE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlkatronicMeasurementsLambda", "AlkatronicMeasurementsLambda\AlkatronicMeasurementsLambda.csproj", "{55ADAC44-E3EF-4918-ADE5-3D0230FAFFA3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lambdas", "Lambdas", "{0BB4120D-B9A2-4E5F-ABFB-AF99B88EFE0A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Alkatronic", "Alkatronic", "{DFB1E3A4-415C-4E63-964B-5876B3221E2C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mastertronic", "Mastertronic", "{59C4F4C8-83E3-4330-AAFB-FF7C610CA5CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataCollection", "DataCollection", "{C241E32A-456B-44CE-8D1B-49C6969A3C0F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{960F99D0-56D0-4159-9763-69AC5AC8280E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlkatronicAddMeasurementLambda", "AlkatronicAddMeasurementLambda\AlkatronicAddMeasurementLambda.csproj", "{3A0660EF-54DC-4CA6-A6A8-5F16D2607D7D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{43495166-1F1D-448B-B1B5-3846783723BA}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		database.sql = database.sql
+		..\..\..\..\Downloads\FTDC.png = ..\..\..\..\Downloads\FTDC.png
+		Grafana.png = Grafana.png
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MastertronicMeasurementsAddLambda", "MastertronicMeasurementsAddLambda\MastertronicMeasurementsAddLambda.csproj", "{6C5EAAFB-2C30-45D1-B95E-911D80463B6E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MastertronicMeasurementsLambda", "MastertronicMeasurementsLambda\MastertronicMeasurementsLambda.csproj", "{6418DD50-BADE-4F5F-9AB3-DEF02CC2E0BD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48D27561-07DF-4782-9772-1AC987710242}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48D27561-07DF-4782-9772-1AC987710242}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48D27561-07DF-4782-9772-1AC987710242}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48D27561-07DF-4782-9772-1AC987710242}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6497FCB1-7523-4BF4-9F9E-8F5E9DACB987}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6497FCB1-7523-4BF4-9F9E-8F5E9DACB987}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6497FCB1-7523-4BF4-9F9E-8F5E9DACB987}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6497FCB1-7523-4BF4-9F9E-8F5E9DACB987}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBC0FBBF-1CBE-4726-9DEF-802433E0A2DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBC0FBBF-1CBE-4726-9DEF-802433E0A2DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBC0FBBF-1CBE-4726-9DEF-802433E0A2DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBC0FBBF-1CBE-4726-9DEF-802433E0A2DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55ADAC44-E3EF-4918-ADE5-3D0230FAFFA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55ADAC44-E3EF-4918-ADE5-3D0230FAFFA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55ADAC44-E3EF-4918-ADE5-3D0230FAFFA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55ADAC44-E3EF-4918-ADE5-3D0230FAFFA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A0660EF-54DC-4CA6-A6A8-5F16D2607D7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A0660EF-54DC-4CA6-A6A8-5F16D2607D7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A0660EF-54DC-4CA6-A6A8-5F16D2607D7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A0660EF-54DC-4CA6-A6A8-5F16D2607D7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C5EAAFB-2C30-45D1-B95E-911D80463B6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C5EAAFB-2C30-45D1-B95E-911D80463B6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C5EAAFB-2C30-45D1-B95E-911D80463B6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C5EAAFB-2C30-45D1-B95E-911D80463B6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6418DD50-BADE-4F5F-9AB3-DEF02CC2E0BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6418DD50-BADE-4F5F-9AB3-DEF02CC2E0BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6418DD50-BADE-4F5F-9AB3-DEF02CC2E0BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6418DD50-BADE-4F5F-9AB3-DEF02CC2E0BD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{48D27561-07DF-4782-9772-1AC987710242} = {C241E32A-456B-44CE-8D1B-49C6969A3C0F}
+		{6497FCB1-7523-4BF4-9F9E-8F5E9DACB987} = {960F99D0-56D0-4159-9763-69AC5AC8280E}
+		{DBC0FBBF-1CBE-4726-9DEF-802433E0A2DE} = {960F99D0-56D0-4159-9763-69AC5AC8280E}
+		{55ADAC44-E3EF-4918-ADE5-3D0230FAFFA3} = {DFB1E3A4-415C-4E63-964B-5876B3221E2C}
+		{DFB1E3A4-415C-4E63-964B-5876B3221E2C} = {0BB4120D-B9A2-4E5F-ABFB-AF99B88EFE0A}
+		{59C4F4C8-83E3-4330-AAFB-FF7C610CA5CB} = {0BB4120D-B9A2-4E5F-ABFB-AF99B88EFE0A}
+		{3A0660EF-54DC-4CA6-A6A8-5F16D2607D7D} = {DFB1E3A4-415C-4E63-964B-5876B3221E2C}
+		{6C5EAAFB-2C30-45D1-B95E-911D80463B6E} = {59C4F4C8-83E3-4330-AAFB-FF7C610CA5CB}
+		{6418DD50-BADE-4F5F-9AB3-DEF02CC2E0BD} = {59C4F4C8-83E3-4330-AAFB-FF7C610CA5CB}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9DD6EE96-7105-4369-8E06-1FC704B96ABC}
+	EndGlobalSection
+EndGlobal
