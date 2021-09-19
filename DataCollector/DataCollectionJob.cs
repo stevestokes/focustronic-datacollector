@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Quartz;
 using RestSharp;
+using RestSharp.Serialization.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +24,7 @@ namespace DataCollector
 
             if (!File.Exists(configFile))
             {
-                Log($"ERROR: Missing configuration file: {configFile}", skipLog: true);
+                await Log($"ERROR: Missing configuration file: {configFile}", skipLog: true);
             }
 
             var configContents = File.ReadAllText(configFile);
@@ -31,46 +32,46 @@ namespace DataCollector
             var config = JsonConvert.DeserializeObject<dynamic>(configContents);
 
             //var mastertronicLocalIP = config.mastertronicLocalIP.Value;
-            var mastertronicCommand = config.mastertronicCommand.Value;
-            var alkatronicEndpoint = config.alkatronicEndpoint.Value;
-            var alkatronicMeasurementsCommand = config.alkatronicMeasurementsCommand.Value;
-            var alkatronicDevicesCommand = config.alkatronicDevicesCommand.Value;
-            var alkatronicLoginCommand = config.alkatronicLoginCommand.Value;
-            var alkatronicEmail = config.alkatronicEmail.Value;
-            var alkatronicPassword = config.alkatronicPassword.Value;
-            var measurementsBaseEndpoint = config.measurementsBaseEndpoint.Value;
-            var measurementsEndpoint = config.measurementsEndpoint.Value;
-            var measurementsAlkatronicEndpoint = config.measurementsAlkatronicEndpoint.Value;
-            var measurementsAPIKey = config.measurementsAPIKey.Value;
-            var measurementsCommand = config.measurementsCommand.Value;
-            var logging = config.logging.Value;
-            var logFile = config.logFile.Value;
+            var mastertronicCommand = config.mastertronicCommand.Value as string;
+            var alkatronicEndpoint = config.alkatronicEndpoint.Value as string;
+            var alkatronicMeasurementsCommand = config.alkatronicMeasurementsCommand.Value as string;
+            var alkatronicDevicesCommand = config.alkatronicDevicesCommand.Value as string;
+            var alkatronicLoginCommand = config.alkatronicLoginCommand.Value as string;
+            var alkatronicEmail = config.alkatronicEmail.Value as string;
+            var alkatronicPassword = config.alkatronicPassword.Value as string;
+            var measurementsBaseEndpoint = config.measurementsBaseEndpoint.Value as string;
+            var measurementsEndpoint = config.measurementsEndpoint.Value as string;
+            var measurementsAlkatronicEndpoint = config.measurementsAlkatronicEndpoint.Value as string;
+            var measurementsAPIKey = config.measurementsAPIKey.Value as string;
+            var measurementsCommand = config.measurementsCommand.Value as string;
+            var logging = config.logging.Value as string;
+            var logFile = config.logFile.Value as string;
             var parameters = config.parameters.ToObject<List<string>>() as List<string>; // todo: validate parameter values
 
             if (string.IsNullOrEmpty(alkatronicEndpoint))
-                Log($"ERROR: could not find alkatronicEndpoint in config file", skipLog: true);
+                await Log($"ERROR: could not find alkatronicEndpoint in config file", skipLog: true);
             if (string.IsNullOrEmpty(alkatronicMeasurementsCommand))
-                Log($"ERROR: could not find alkatronicMeasurementsCommand in config file", skipLog: true);
+                await Log($"ERROR: could not find alkatronicMeasurementsCommand in config file", skipLog: true);
             if (string.IsNullOrEmpty(alkatronicDevicesCommand))
-                Log($"ERROR: could not find alkatronicDevicesCommand in config file", skipLog: true);
+                await Log($"ERROR: could not find alkatronicDevicesCommand in config file", skipLog: true);
             if (string.IsNullOrEmpty(mastertronicCommand))
-                Log($"ERROR: could not find mastertronicCommand in config file", skipLog: true);
+                await Log($"ERROR: could not find mastertronicCommand in config file", skipLog: true);
             if (string.IsNullOrEmpty(logging))
-                Log($"ERROR: could not find logging in config file", skipLog: true);
+                await Log($"ERROR: could not find logging in config file", skipLog: true);
             if (string.IsNullOrEmpty(logFile))
-                Log($"ERROR: could not find logFile in config file", skipLog: true);
+                await Log($"ERROR: could not find logFile in config file", skipLog: true);
             if (!parameters.Any())
-                Log($"ERROR: could not find parameters in config file", skipLog: true);
+                await Log($"ERROR: could not find parameters in config file", skipLog: true);
             if (string.IsNullOrEmpty(measurementsBaseEndpoint))
-                Log($"ERROR: could not find measurementsBaseEndpoint in config file", skipLog: true);
+                await Log($"ERROR: could not find measurementsBaseEndpoint in config file", skipLog: true);
             if (string.IsNullOrEmpty(measurementsEndpoint))
-                Log($"ERROR: could not find measurementsEndpoint in config file", skipLog: true);
+                await Log($"ERROR: could not find measurementsEndpoint in config file", skipLog: true);
             if (string.IsNullOrEmpty(measurementsAlkatronicEndpoint))
-                Log($"ERROR: could not find measurementsAlkatronicEndpoint in config file", skipLog: true);
+                await Log($"ERROR: could not find measurementsAlkatronicEndpoint in config file", skipLog: true);
             if (string.IsNullOrEmpty(measurementsAPIKey))
-                Log($"ERROR: could not find measurementsAPIKey in config file", skipLog: true);
+                await Log($"ERROR: could not find measurementsAPIKey in config file", skipLog: true);
             if (string.IsNullOrEmpty(measurementsCommand))
-                Log($"ERROR: could not find measurementsCommand in config file", skipLog: true);
+                await Log($"ERROR: could not find measurementsCommand in config file", skipLog: true);
 
             if (logging == "true")
             {
@@ -78,45 +79,56 @@ namespace DataCollector
                 logfile = logFile;
             }
 
-            
-            Log("Logging in to Focustronic/Alkatronic", true);
+
+            await Log("Logging in to Focustronic/Alkatronic", true);
 
             var loginResponse = await LoginToAlkatronic(alkatronicEndpoint + alkatronicLoginCommand, alkatronicEmail, alkatronicPassword) as AlkatronicLoginReponse;
 
-            Log("=> OK");
+            await Log("=> OK", header: false);
 
             var devices = await GetDevicesFromFocustronic(alkatronicEndpoint, alkatronicDevicesCommand, loginResponse.data) as IEnumerable<AlkatronicDevices>;
 
-            Log("Searching for Alkatronic");
+            await Log("Searching for Alkatronic");
 
             // validate there is an alkatronic
-            var hasAlkatronic = devices.Where(ad => ad.type == "alkatronic")
-                                       .Any();
+            var alkatronic = devices.Where(ad => ad.type == "alkatronic")
+                                    .FirstOrDefault()?
+                                    .devices?
+                                    .FirstOrDefault() ?? null;
 
-            if (hasAlkatronic)
+            if (alkatronic != null)
             {
-                Log("Starting data collection for Alkatronic");
-
-                var originalAlkatronicMeasurements = await GetAlkatronicDataFromMeasurementsEndpoint(measurementsBaseEndpoint + measurementsAlkatronicEndpoint, measurementsAPIKey, context.CancellationToken) as IEnumerable<AlkatronicMeasurement>;
-
-                var modifiedAlkatronicMeasurements = GetAlkatronicDataFromFocustronic(alkatronicEndpoint, alkatronicMeasurementsCommand, alkatronicDevicesCommand, loginResponse.data) as IEnumerable<AlkatronicMeasurement>;
-
-                // delta results / hash
-                var alkaDeltaResults = Delta.Compare(
-                    modifieds: modifiedAlkatronicMeasurements,
-                    originals: originalAlkatronicMeasurements,
-                    m => m.record_time);
-
-                if (alkaDeltaResults.Adds.Any())
+                try
                 {
-                    AddAlkatronicDataToMeasurementsEndpoint(measurementsBaseEndpoint + measurementsAlkatronicEndpoint, alkaDeltaResults.Adds, measurementsAPIKey);
-                }
+                    await Log("Starting data collection for Alkatronic");
 
-                Log("Done");
+                    var deviceID = alkatronic.id;
+
+                    var originalAlkatronicMeasurements = await GetAlkatronicDataFromMeasurementsEndpoint(measurementsBaseEndpoint + measurementsAlkatronicEndpoint + "?days=7", measurementsAPIKey, context.CancellationToken) as IEnumerable<AlkatronicMeasurement>;
+
+                    var modifiedAlkatronicMeasurements = await GetAlkatronicDataFromFocustronic(alkatronicEndpoint, alkatronicMeasurementsCommand, deviceID, loginResponse.data) as IEnumerable<AlkatronicMeasurement>;
+
+                    // delta results / hash
+                    var alkaDeltaResults = Delta.Compare(
+                        modifieds: modifiedAlkatronicMeasurements,
+                        originals: originalAlkatronicMeasurements,
+                        m => m.record_time);
+
+                    if (alkaDeltaResults.Adds.Any())
+                    {
+                        await AddAlkatronicDataToMeasurementsEndpoint(measurementsBaseEndpoint + measurementsAlkatronicEndpoint, alkaDeltaResults.Adds, measurementsAPIKey);
+                    }
+
+                    await Log("Done");
+                }
+                catch(Exception ex)
+                {
+                    await Log(ex.ToString());
+                }
             }
 
 
-            Log("Searching for Mastertronic");
+            await Log("Searching for Mastertronic");
 
             // get the local ip of the mastertronic
             var mastertronicLocalIP = devices.Where(ad => ad.type == "mastertronic")
@@ -125,30 +137,35 @@ namespace DataCollector
 
             if (!string.IsNullOrEmpty(mastertronicLocalIP))
             {
-                Log("Starting data collection for Mastertronic");
-
-                var originalMastertronicMeasurements = GetMastertronicDataFromMeasurementsEndpoint(measurementsBaseEndpoint + measurementsEndpoint, measurementsAPIKey) as IEnumerable<Measurement>;
-
-                var modifiedMastertronicMeasurements = GetMastertronicDataFromMastertronic(mastertronicLocalIP, mastertronicCommand, parameters) as IEnumerable<Measurement>;
-
-                // delta results / hash
-                var masterDeltaResults = Delta.Compare(
-                    modifieds: modifiedMastertronicMeasurements,
-                    originals: originalMastertronicMeasurements,
-                    m => m.record_time, m => m.parameter);
-
-                if (masterDeltaResults.Adds.Any())
+                try
                 {
-                    AddMastertronicDataToMeasurementsEndpoint(measurementsBaseEndpoint + measurementsEndpoint, masterDeltaResults.Adds, measurementsAPIKey);
+                    await Log("Starting data collection for Mastertronic");
+
+                    var originalMastertronicMeasurements = await GetMastertronicDataFromMeasurementsEndpoint(measurementsBaseEndpoint + measurementsEndpoint, measurementsAPIKey) as IEnumerable<Measurement>;
+
+                    var modifiedMastertronicMeasurements = await GetMastertronicDataFromMastertronic(mastertronicLocalIP, mastertronicCommand, parameters) as IEnumerable<Measurement>;
+
+                    // delta results / hash
+                    var masterDeltaResults = Delta.Compare(
+                        modifieds: modifiedMastertronicMeasurements,
+                        originals: originalMastertronicMeasurements,
+                        m => m.record_time);
+
+                    if (masterDeltaResults.Adds.Any())
+                    {
+                        await AddMastertronicDataToMeasurementsEndpoint(measurementsBaseEndpoint + measurementsEndpoint, masterDeltaResults.Adds, measurementsAPIKey);
+                    }
+
+                    await Log("Done");
                 }
-
-                // schedule every hour
-
-                Log("Done");
+                catch(Exception ex)
+                {
+                    await Log(ex.ToString());
+                }
             }
         }
 
-        private void Log(string message, bool Write = false, bool skipLog = false, bool header = true)
+        private async Task Log(string message, bool Write = false, bool skipLog = false, bool header = true)
         {
             var hdr = $"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}] - ";
 
@@ -164,15 +181,15 @@ namespace DataCollector
                 using (var writer = File.AppendText(logfile))
                 {
                     if (Write)
-                        writer.Write(message);
+                        await writer.WriteAsync(message);
                     else
-                        writer.WriteLine(message);
+                        await writer.WriteLineAsync(message);
                 }
         }
 
         #region Mastertronic
 
-        private IEnumerable<Measurement> GetMastertronicDataFromMastertronic(string ip, string command, IEnumerable<string> parameters)
+        private async Task<IEnumerable<Measurement>> GetMastertronicDataFromMastertronic(string ip, string command, IEnumerable<string> parameters)
         {
             //http request data in mastertronic
 
@@ -180,6 +197,8 @@ namespace DataCollector
 
             var localURL = $"http://{ip}/";
             var client = new RestClient(localURL);
+
+            client.AddHandler("text/plain", () => { return new RestSharp.Serialization.Json.JsonSerializer(); });
 
             foreach (var parameter in parameters)
             {
@@ -197,23 +216,21 @@ namespace DataCollector
                         type = "read",
                     };
 
-                    Log($"Requesting {parameter} from Mastertronic", Write: true);
+                    await Log($"Requesting {parameter} from Mastertronic", Write: true);
 
-                    var request = new RestRequest($"{command}{DateTime.UtcNow.Ticks}", DataFormat.Json)
+                    var request = new RestRequest($"{command}{DateTime.UtcNow.Ticks}", DataFormat.None)
                         .AddJsonBody(mastertronicRequest);
 
-                    var response = client.Post(request);
+                    var response = await client.PostAsync<MastertronicResponse>(request);
 
-                    var mastertronicResponse = JsonConvert.DeserializeObject<MastertronicResponse>(response.Content);
+                    await Log($" => OK", header: false);
 
-                    Log($" => OK", header: false);
-
-                    modifiedMeasurements.AddRange(mastertronicResponse.data);
+                    modifiedMeasurements.AddRange(response.data);
                 }
                 catch (Exception ex)
                 {
-                    Log($"ERROR: could not fetch data from MT\r\nparam: {parameter}, url: {client.BaseUrl}\r\n\r\n");
-                    Log(ex.ToString());
+                    await Log($"ERROR: could not fetch data from MT\r\nparam: {parameter}, url: {client.BaseUrl}\r\n\r\n");
+                    await Log(ex.ToString());
                     throw;
                 }
             }
@@ -221,7 +238,7 @@ namespace DataCollector
             return modifiedMeasurements;
         }
 
-        private IEnumerable<Measurement> GetMastertronicDataFromMeasurementsEndpoint(string measurementsEndpoint, string measurementsAPIKey)
+        private async Task<IEnumerable<Measurement>> GetMastertronicDataFromMeasurementsEndpoint(string measurementsEndpoint, string measurementsAPIKey)
         {
             //http request data in mastertronic
 
@@ -230,28 +247,28 @@ namespace DataCollector
 
             try
             {
-                Log($"Requesting requesting data from Measurements Endpoint", Write: true);
+                await Log($"Requesting requesting data from Measurements Endpoint", Write: true);
 
                 var request = new RestRequest()
                     .AddHeader("x-api-key", measurementsAPIKey);
-                var response = client.Get(request);
-                var measurementsResponse = JsonConvert.DeserializeObject<IEnumerable<Measurement>>(response.Content);
+                
+                var response = await client.GetAsync<IEnumerable<Measurement>>(request);
 
-                Log($" => OK", header: false);
+                await Log($" => OK", header: false);
 
-                originalMeasurements.AddRange(measurementsResponse);
+                originalMeasurements.AddRange(response);
             }
             catch (Exception ex)
             {
-                Log($"ERROR: could not fetch data from Measurements Endpoint\r\nurl: {client.BaseUrl}\r\n\r\n");
-                Log(ex.ToString());
+                await Log($"ERROR: could not fetch data from Measurements Endpoint\r\nurl: {client.BaseUrl}\r\n\r\n");
+                await Log(ex.ToString());
                 throw;
             }
 
             return originalMeasurements;
         }
 
-        private void AddMastertronicDataToMeasurementsEndpoint(string endpoint, IEnumerable<Measurement> measurements, string measurementsAPIKey)
+        private async Task AddMastertronicDataToMeasurementsEndpoint(string endpoint, IEnumerable<Measurement> measurements, string measurementsAPIKey)
         {
             // post data to lambda
 
@@ -259,7 +276,7 @@ namespace DataCollector
 
             try
             {
-                Log($"Posting data to Measurements Endpoint", Write: true);
+                await Log($"Posting data to Measurements Endpoint", Write: true);
 
                 var measurementsRequest = new MeasurementsRequest()
                 {
@@ -270,16 +287,14 @@ namespace DataCollector
                     .AddHeader("x-api-key", measurementsAPIKey)
                     .AddJsonBody(measurements);
 
-                var response = client.Post(request);
+                await client.PostAsync<dynamic>(request);
 
-                var measurementsResponse = JsonConvert.DeserializeObject<IEnumerable<Measurement>>(response.Content);
-
-                Log($" => OK", header: false);
+                await Log($" => OK", header: false);
             }
             catch (Exception ex)
             {
-                Log($"ERROR: could not fetch data from Measurements Endpoint\r\nurl: {client.BaseUrl}\r\n\r\n");
-                Log(ex.ToString());
+                await Log($"ERROR: could not fetch data from Measurements Endpoint\r\nurl: {client.BaseUrl}\r\n\r\n");
+                await Log(ex.ToString());
                 throw;
             }
         }
@@ -307,7 +322,7 @@ namespace DataCollector
             }
             catch (Exception ex)
             {
-                Log(ex.ToString());
+                await Log(ex.ToString());
             }
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
@@ -335,36 +350,29 @@ namespace DataCollector
             }
             catch (Exception ex)
             {
-                Log(ex.ToString());
+                await Log(ex.ToString());
             }
 
             return new List<AlkatronicDevices>();
         }
 
-        private IEnumerable<AlkatronicMeasurement> GetAlkatronicDataFromFocustronic(string endpoint, string command, AlkatronicDevicesResponse devices, string token)
+        private async Task<IEnumerable<AlkatronicMeasurement>> GetAlkatronicDataFromFocustronic(string endpoint, string command, int deviceID, string token)
         {
             try
             {
-                var deviceID = devices.data
-                    .Where(d => d.type == "alkatronic")
-                    .Select(a => a.devices.FirstOrDefault().id)
-                    .FirstOrDefault();
-
                 // get alkatronic measurment data
                 
                 var client = new RestClient(endpoint);
 
                 var alkatronicMeasurementRequest = new RestRequest(string.Format(command, deviceID));
 
-                var alkatronicMeasurementResponse = client.Get(alkatronicMeasurementRequest);
+                var alkatronicMeasurementResponse = await client.GetAsync<AlkatronicMeasurementResponse>(alkatronicMeasurementRequest);
 
-                var measurements = JsonConvert.DeserializeObject<AlkatronicMeasurementResponse>(alkatronicMeasurementResponse.Content);
-
-                return measurements.data.Where(d => !d.is_hidden);
+                return alkatronicMeasurementResponse.data.Where(d => !d.is_hidden);
             }
             catch (Exception ex)
             {
-                Log(ex.ToString());
+                await Log(ex.ToString());
             }
 
             return new List<AlkatronicMeasurement>();
@@ -379,28 +387,28 @@ namespace DataCollector
 
             try
             {
-                Log($"Requesting requesting data from Measurements Endpoint", Write: true);
+                await Log($"Requesting requesting data from Measurements Endpoint", Write: true);
 
                 var request = new RestRequest()
                     .AddHeader("x-api-key", measurementsAPIKey);
 
                 var response = await client.GetAsync<IEnumerable<AlkatronicMeasurement>>(request);
 
-                Log($" => OK", header: false);
+                await Log($" => OK", header: false);
 
                 originalMeasurements.AddRange(response);
             }
             catch (Exception ex)
             {
-                Log($"ERROR: could not fetch data from Alkatronic Measurements Endpoint\r\nurl: {client.BaseUrl}\r\n\r\n");
-                Log(ex.ToString());
+                await Log($"ERROR: could not fetch data from Alkatronic Measurements Endpoint\r\nurl: {client.BaseUrl}\r\n\r\n");
+                await Log(ex.ToString());
                 throw;
             }
 
             return originalMeasurements;
         }
 
-        private void AddAlkatronicDataToMeasurementsEndpoint(string endpoint, IEnumerable<AlkatronicMeasurement> measurements, string measurementsAPIKey)
+        private async Task AddAlkatronicDataToMeasurementsEndpoint(string endpoint, IEnumerable<AlkatronicMeasurement> measurements, string measurementsAPIKey)
         {
             // post data to lambda
 
@@ -408,7 +416,7 @@ namespace DataCollector
 
             try
             {
-                Log($"Posting data to Measurements Endpoint", Write: true);
+                await Log($"Posting data to Measurements Endpoint", Write: true);
 
                 var measurementsRequest = new AlkatronicMeasurementsRequest()
                 {
@@ -419,16 +427,14 @@ namespace DataCollector
                     .AddHeader("x-api-key", measurementsAPIKey)
                     .AddJsonBody(measurements);
 
-                var response = client.Post(request);
+                await client.PostAsync<dynamic>(request);
 
-                var measurementsResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
-
-                Log($" => OK", header: false);
+                await Log($" => OK", header: false);
             }
             catch (Exception ex)
             {
-                Log($"ERROR: could not fetch data from Measurements Endpoint\r\nurl: {client.BaseUrl}\r\n\r\n");
-                Log(ex.ToString());
+                await Log($"ERROR: could not add data to Measurements Endpoint\r\nurl: {client.BaseUrl}\r\n\r\n");
+                await Log(ex.ToString());
                 throw;
             }
         }

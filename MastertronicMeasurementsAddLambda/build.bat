@@ -1,2 +1,2 @@
-dotnet publish MeasurementsAddLambda.csproj /p:GenerateRuntimeConfigurationFiles=true
+dotnet publish MastertronicMeasurementsAddLambda.csproj /p:GenerateRuntimeConfigurationFiles=true
 pause

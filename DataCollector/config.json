@@ -8,7 +8,7 @@
   "alkatronicPassword": "FILL ME IN",
   "measurementsBaseEndpoint": "https://{FILL ME IN}.execute-api.us-east-1.amazonaws.com/default",
   "measurementsEndpoint": "/measurements",
-  "measurementsAlkatronicEndpoint": "/alka-measurements?days=7",
+  "measurementsAlkatronicEndpoint": "/alka-measurements",
   "measurementsAPIKey": "FILL ME IN",
   "measurementsCommand": "?parameter=",
   "logFile": "datacollector.log",

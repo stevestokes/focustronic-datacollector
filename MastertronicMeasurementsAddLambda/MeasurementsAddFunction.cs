@@ -35,12 +35,11 @@ namespace MastertronicMeasurementsAddLambda
                     db.BulkInsert(measurements);
                 }
 
-                var response = new APIGatewayProxyResponse
+                return new APIGatewayProxyResponse
                 {
                     StatusCode = (int)HttpStatusCode.OK,
+                    Body = JsonConvert.SerializeObject(new { message = "OK" }),
                 };
-
-                return response;
             }
             catch (Exception ex)
             {

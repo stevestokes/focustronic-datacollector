@@ -35,7 +35,7 @@ namespace DataCollector
 
             while (true)
             {
-                await Task.Delay(5);
+                await Task.Delay(30);
             }
         }
     }
