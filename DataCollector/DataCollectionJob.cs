@@ -46,7 +46,6 @@ namespace DataCollector
             var measurementsCommand = config.measurementsCommand.Value as string;
             var logging = config.logging.Value as string;
             var logFile = config.logFile.Value as string;
-            var parameters = config.parameters.ToObject<List<string>>() as List<string>; // todo: validate parameter values
 
             if (string.IsNullOrEmpty(alkatronicEndpoint))
                 await Log($"ERROR: could not find alkatronicEndpoint in config file", skipLog: true);
@@ -60,8 +59,6 @@ namespace DataCollector
                 await Log($"ERROR: could not find logging in config file", skipLog: true);
             if (string.IsNullOrEmpty(logFile))
                 await Log($"ERROR: could not find logFile in config file", skipLog: true);
-            if (!parameters.Any())
-                await Log($"ERROR: could not find parameters in config file", skipLog: true);
             if (string.IsNullOrEmpty(measurementsBaseEndpoint))
                 await Log($"ERROR: could not find measurementsBaseEndpoint in config file", skipLog: true);
             if (string.IsNullOrEmpty(measurementsEndpoint))
@@ -143,7 +140,7 @@ namespace DataCollector
 
                     var originalMastertronicMeasurements = await GetMastertronicDataFromMeasurementsEndpoint(measurementsBaseEndpoint + measurementsEndpoint, measurementsAPIKey) as IEnumerable<Measurement>;
 
-                    var modifiedMastertronicMeasurements = await GetMastertronicDataFromMastertronic(mastertronicLocalIP, mastertronicCommand, parameters) as IEnumerable<Measurement>;
+                    var modifiedMastertronicMeasurements = await GetMastertronicDataFromMastertronic(mastertronicLocalIP, mastertronicCommand) as IEnumerable<Measurement>;
 
                     // delta results / hash
                     var masterDeltaResults = Delta.Compare(
@@ -189,7 +186,7 @@ namespace DataCollector
 
         #region Mastertronic
 
-        private async Task<IEnumerable<Measurement>> GetMastertronicDataFromMastertronic(string ip, string command, IEnumerable<string> parameters)
+        private async Task<IEnumerable<Measurement>> GetMastertronicDataFromMastertronic(string ip, string command)
         {
             //http request data in mastertronic
 
@@ -200,39 +197,35 @@ namespace DataCollector
 
             client.AddHandler("text/plain", () => { return new RestSharp.Serialization.Json.JsonSerializer(); });
 
-            foreach (var parameter in parameters)
+            try
             {
-                try
+                var mastertronicRequest = new MastertronicRequest()
                 {
-                    var mastertronicRequest = new MastertronicRequest()
+                    action = "HISTORY",
+                    data = new MastertronicRequestData()
                     {
-                        action = "HISTORY",
-                        data = new MastertronicRequestData()
-                        {
-                            @parameter = parameter,
-                            range = "2160"
-                        },
-                        timestamp = DateTime.UtcNow.Ticks,
-                        type = "read",
-                    };
+                        range = "2160"
+                    },
+                    timestamp = DateTimeOffset.Now.AddDays(-30).ToUnixTimeSeconds(),
+                    type = "read",
+                };
 
-                    await Log($"Requesting {parameter} from Mastertronic", Write: true);
+                await Log($"Requesting all parameters from Mastertronic", Write: true);
 
-                    var request = new RestRequest($"{command}{DateTime.UtcNow.Ticks}", DataFormat.None)
-                        .AddJsonBody(mastertronicRequest);
+                var request = new RestRequest($"{command}{DateTimeOffset.Now.AddDays(-30).ToUnixTimeSeconds()}", DataFormat.None)
+                    .AddJsonBody(mastertronicRequest);
 
-                    var response = await client.PostAsync<MastertronicResponse>(request);
+                var response = await client.PostAsync<MastertronicResponse>(request);
 
-                    await Log($" => OK", header: false);
+                await Log($" => OK", header: false);
 
-                    modifiedMeasurements.AddRange(response.data);
-                }
-                catch (Exception ex)
-                {
-                    await Log($"ERROR: could not fetch data from MT\r\nparam: {parameter}, url: {client.BaseUrl}\r\n\r\n");
-                    await Log(ex.ToString());
-                    throw;
-                }
+                modifiedMeasurements.AddRange(response.data);
+            }
+            catch (Exception ex)
+            {
+                await Log($"ERROR: could not fetch data from MT, url: {client.BaseUrl}\r\n\r\n");
+                await Log(ex.ToString());
+                throw;
             }
 
             return modifiedMeasurements;

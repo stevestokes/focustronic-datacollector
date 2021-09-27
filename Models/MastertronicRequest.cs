@@ -1,6 +1,6 @@
 ﻿public class MastertronicRequestData
 {
-    public string parameter { get; set; }
+    //public string parameter { get; set; }
     public string range { get; set; }
 }
 
